@@ -1,4 +1,4 @@
-package org.rtd;
+package org.titanomachia.mclogcmdexec;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;

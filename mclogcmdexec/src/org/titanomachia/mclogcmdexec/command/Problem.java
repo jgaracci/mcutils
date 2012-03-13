@@ -1,4 +1,4 @@
-package org.rtd.command;
+package org.titanomachia.mclogcmdexec.command;
 
 public interface Problem {
 	String toDisplayString();

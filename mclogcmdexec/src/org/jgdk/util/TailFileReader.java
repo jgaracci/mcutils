@@ -1,4 +1,4 @@
-package org.rtd.util;
+package org.jgdk.util;
 
 import java.io.File;
 import java.io.FileReader;

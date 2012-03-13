@@ -1,8 +1,8 @@
-package org.rtd.command;
+package org.titanomachia.mclogcmdexec.command;
 
 import java.io.IOException;
 
-import org.rtd.ApplicationContext;
+import org.titanomachia.mclogcmdexec.ApplicationContext;
 
 
 public class Quiz extends Command {

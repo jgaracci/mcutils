@@ -1,4 +1,4 @@
-package org.rtd.util;
+package org.jgdk.util;
 
 import java.io.BufferedReader;
 import java.io.IOException;

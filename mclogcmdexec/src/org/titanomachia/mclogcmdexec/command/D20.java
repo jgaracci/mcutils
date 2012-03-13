@@ -1,4 +1,4 @@
-package org.rtd.command;
+package org.titanomachia.mclogcmdexec.command;
 
 import java.io.IOException;
 import java.util.Random;

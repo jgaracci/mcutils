@@ -1,4 +1,4 @@
-package org.rtd.command;
+package org.titanomachia.mclogcmdexec.command;
 
 public abstract class Command {
     private String user;

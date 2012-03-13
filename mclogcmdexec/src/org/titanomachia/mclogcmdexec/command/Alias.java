@@ -1,6 +1,6 @@
-package org.rtd.command;
+package org.titanomachia.mclogcmdexec.command;
 
-import org.rtd.ApplicationContext;
+import org.titanomachia.mclogcmdexec.ApplicationContext;
 
 public class Alias extends Command {
     @Override

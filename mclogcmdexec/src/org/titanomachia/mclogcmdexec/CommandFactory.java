@@ -1,10 +1,10 @@
-package org.rtd;
+package org.titanomachia.mclogcmdexec;
 
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.rtd.command.Command;
+import org.titanomachia.mclogcmdexec.command.Command;
 
 public class CommandFactory {
     private static Pattern CONSOLE_COMMAND_PATTERN = Pattern.compile( "^.+<([A-Za-z_0-9]*)> ([^ ]*)[ ]{0,1}(([^ ]*[ ]{0,1})*)" );

@@ -1,12 +1,12 @@
-package org.rtd;
+package org.titanomachia.mclogcmdexec;
 import java.io.File;
 import java.util.Map;
 
-import org.rtd.command.Command;
-import org.rtd.util.DataFeedReader;
-import org.rtd.util.TailFileReader;
+import org.jgdk.util.DataFeedReader;
+import org.jgdk.util.TailFileReader;
+import org.titanomachia.mclogcmdexec.command.Command;
 
-public class RTD {
+public class MCLogCommandExecutor {
     public static void main( String[] args ) {
         try {
             if ( args.length != 1 ) {

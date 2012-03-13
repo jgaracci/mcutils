@@ -1,10 +1,10 @@
-package org.rtd.command;
+package org.titanomachia.mclogcmdexec.command;
 
 import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.rtd.ApplicationContext;
+import org.titanomachia.mclogcmdexec.ApplicationContext;
 
 public class Whisper extends Command {
     private static final Log LOG = LogFactory.getLog( Move.class );

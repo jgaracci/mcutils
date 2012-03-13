@@ -1,4 +1,4 @@
-package org.rtd;
+package org.titanomachia.mclogcmdexec;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.junit.Test;
+import org.titanomachia.mclogcmdexec.CommandMetaData;
+import org.titanomachia.mclogcmdexec.CommandPropertiesLoader;
 
 public class CommandPropertiesLoaderTest {
 

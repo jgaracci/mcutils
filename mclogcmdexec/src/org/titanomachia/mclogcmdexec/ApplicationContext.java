@@ -1,4 +1,4 @@
-package org.rtd;
+package org.titanomachia.mclogcmdexec;
 
 import java.util.HashMap;
 import java.util.Map;

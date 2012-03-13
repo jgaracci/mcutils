@@ -1,4 +1,4 @@
-package org.rtd;
+package org.titanomachia.mclogcmdexec;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -7,8 +7,10 @@ import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.rtd.command.Command;
-import org.rtd.command.D20;
+import org.titanomachia.mclogcmdexec.CommandFactory;
+import org.titanomachia.mclogcmdexec.CommandMetaData;
+import org.titanomachia.mclogcmdexec.command.Command;
+import org.titanomachia.mclogcmdexec.command.D20;
 
 public class CommandFactoryTest {
     @Test
