@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	
+<project basedir="." default="lib" name="RTD">
+	  <path id="lib.path">
+	    <pathelement path="lib/commons-lang-1.0.1.jar" />
+	    <pathelement path="lib/commons-logging-1.0.4.jar" />
+	    <pathelement path="lib/jetty-util-7.5.4.v20111024.jar" />
+	    <pathelement path="lib/servlet-api-2.5.jar" />
+	  </path>
+	
+    <target name="compile-src">
+        <javac srcdir="src" fork="true" debug="true" destdir="classes"/>
+    </target>
+
+	<target name="lib" depends="compile-src">
+		<jar jarfile="rtd.jar">
+			<fileset dir="classes" includes="org/rtd/**"/>
+		</jar>
+	</target>
+</project>
+	
