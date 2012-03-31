@@ -42,7 +42,7 @@ public class Answer extends Command {
 			
 			streak.add(problem);
 			
-			response += " That's " + streak.size() + " in a row! You now have " + currentPoints + " points";
+			response += " That's " + streak.size() + " in a row! You now have " + currentPoints + " point" + (currentPoints == 1 ? "" : "s");
 			CommandUtils.writeToConsole(response, getUser());
 			
 			ApplicationContext.setValue("quiz.streak." + getUser(), streak);
@@ -56,7 +56,7 @@ public class Answer extends Command {
 					currentPoints = 0;
 				}
 				
-				response += ". You have " + currentPoints + " points";
+				response += ". You have " + currentPoints + " point" + (currentPoints == 1 ? "" : "s");
 
 		        CommandUtils.writeToConsole(response, getUser());
 			}
