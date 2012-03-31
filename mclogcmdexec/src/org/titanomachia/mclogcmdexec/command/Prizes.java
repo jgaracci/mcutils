@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.lang.StringUtils;
 import org.titanomachia.mclogcmdexec.ApplicationContext;
 
 public class Prizes extends Command {
@@ -127,7 +128,7 @@ public class Prizes extends Command {
 	    	
 	    	for (String id : ids) {
 	    		Prize prize = prizes.get(id);
-	    		CommandUtils.writeToConsole(id + " -> " + prize.count + " " + prize.name + " for " + prize.cost, getUser());
+	    		writePrizeToConsole(id, prize);
 	    	}
 	    	
 	    	CommandUtils.writeToConsole("Remember, purchasing ends your streak", getUser());
@@ -146,11 +147,15 @@ public class Prizes extends Command {
 	    	
 	    	for (String id : ids) {
 	    		Prize prize = prizes.get(id);
-	    		CommandUtils.writeToConsole(id + " -> " + prize.count + " " + prize.name + " for " + prize.cost, getUser());
+	    		writePrizeToConsole(id, prize);
 	    	}
 	    	
 	    	CommandUtils.writeToConsole("Remember, purchasing ends your streak", getUser());
     	}
+	}
+
+	private void writePrizeToConsole(String id, Prize prize) {
+		CommandUtils.writeToConsole(StringUtils.rightPad(id, 6) + "|" + StringUtils.leftPad(String.valueOf(prize.count), 4) + " " + StringUtils.rightPad(prize.name, 15) + prize.cost, getUser());
 	}
 
 //	private void showUsage() {
