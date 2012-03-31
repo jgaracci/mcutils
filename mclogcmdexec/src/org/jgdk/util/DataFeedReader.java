@@ -29,7 +29,7 @@ public abstract class DataFeedReader implements Runnable {
         try {
             running = true;
             for (String line;running;Thread.yield()){
-                line = dataFeedReader.readLine();
+                line = readLine();
                 if (null != line) {
                     processData(line);
                 }
@@ -49,6 +49,10 @@ public abstract class DataFeedReader implements Runnable {
             closeInputStream();
         }
     }
+
+	protected String readLine() throws IOException {
+		return dataFeedReader.readLine();
+	}
     
     public void stop() {
         running = false;
