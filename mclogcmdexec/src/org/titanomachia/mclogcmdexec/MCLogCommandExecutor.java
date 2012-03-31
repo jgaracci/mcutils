@@ -19,7 +19,12 @@ public class MCLogCommandExecutor {
             
             if (!file.exists()) {
                 System.err.println("File \"" + file + "\" does not exist");
+                return;
             }
+            
+            ApplicationContext.setFilePath("commands.context");
+            
+            ApplicationContext.load();
             
             Map<String, CommandMetaData> COMMANDS = new CommandPropertiesLoader().loadCommands();
             
@@ -30,10 +35,16 @@ public class MCLogCommandExecutor {
                 protected void processData( String line ) {
                     Command command = factory.getCommand( line );
                     if (null != command) {
-                        command.execute();
+                    	try {
+                    		command.execute();
+                    	}
+                    	finally {
+                    		ApplicationContext.save();
+                    	}
                     }
                 }
             };
+            
             reader.setIsTailing(true);
             new Thread(reader, "Reader").start();
         }

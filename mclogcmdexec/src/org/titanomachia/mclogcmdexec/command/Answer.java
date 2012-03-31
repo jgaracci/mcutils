@@ -1,6 +1,7 @@
 package org.titanomachia.mclogcmdexec.command;
 
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.titanomachia.mclogcmdexec.ApplicationContext;
 
@@ -8,7 +9,7 @@ public class Answer extends Command {
 
 	@Override
 	public void execute() {
-		Problem problem = ApplicationContext.getValue("quiz.problem." + getUser());
+		Problem<?> problem = ApplicationContext.getValue("quiz.problem." + getUser());
 		
 		if (null == problem) {
 			return;
@@ -24,38 +25,44 @@ public class Answer extends Command {
 		
 		String response = correct ? "Correct!" : ("Wrong... " + problem.getAnswer());
 
-		Integer streak = ApplicationContext.getValue("quiz.streak." + getUser());
+		List<Problem<?>> streak = ApplicationContext.getValue("quiz.streak." + getUser());
 		if (correct) {
-			if (null != streak) {
-				streak = streak + 1;
-				response += " That's " + streak + " in a row!";
+			if (null == streak) {
+				streak = new ArrayList<Problem<?>>();
 			}
-			else {
-				streak = 1;
+			
+			Integer currentPoints = ApplicationContext.getValue("quiz.points." + getUser());
+			if (null == currentPoints) {
+				currentPoints = 0;
 			}
+			
+			currentPoints = currentPoints + problem.calculatePoints(streak);
+			
+			ApplicationContext.setValue("quiz.points." + getUser(), currentPoints);
+			
+			streak.add(problem);
+			
+			response += " That's " + streak.size() + " in a row! You now have " + currentPoints + " points";
+			CommandUtils.writeToConsole(response, getUser());
+			
 			ApplicationContext.setValue("quiz.streak." + getUser(), streak);
 		}
 		else {
-			if (null != streak && streak > 0) {
-				response += ". You had a streak of " + streak + " going.";
+			if (null != streak && streak.size() > 0) {
+				response += ". You had a streak of " + streak.size() + " going.";
+				
+				Integer currentPoints = ApplicationContext.getValue("quiz.points." + getUser());
+				if (null == currentPoints) {
+					currentPoints = 0;
+				}
+				
+				response += ". You have " + currentPoints + " points";
+
+		        CommandUtils.writeToConsole(response, getUser());
 			}
-			ApplicationContext.setValue("quiz.streak." + getUser(), 0);
+			ApplicationContext.setValue("quiz.streak." + getUser(), new ArrayList<Problem<?>>());
 		}
 		
 		ApplicationContext.clearValue("quiz.problem." + getUser());
-
-        writeToConsole(response, getUser());
-	}
-
-	private void writeToConsole(String message, String user) {
-		try {
-			Runtime.getRuntime().exec(new String[] {"/bin/bash", "-c", "echo \"tell " + user + " " + message + "\" > console.pipe"}).waitFor();
-		}
-		catch ( InterruptedException e ) {
-		    e.printStackTrace();
-		}
-		catch ( IOException e ) {
-		    e.printStackTrace();
-		}
 	}
 }
