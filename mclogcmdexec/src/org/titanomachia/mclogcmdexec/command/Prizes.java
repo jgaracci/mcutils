@@ -17,6 +17,9 @@ public class Prizes extends Command {
 	@Override
 	public void execute() {
 		Integer points = ApplicationContext.getValue("quiz.points." + getUser());
+		if (null == points) {
+			points = 0;
+		}
 
 		Map<String, Prize> prizes = getPrizes(points, "list".equals(getArgs().trim()));
 		
@@ -90,7 +93,7 @@ public class Prizes extends Command {
     	CommandUtils.writeToConsole("You now have " + points + " point" + (points == 1 ? "" : "s"), getUser());
 	}
 
-	private Map<String, Prize> getPrizes(Integer points, boolean all) {
+	public Map<String, Prize> getPrizes(Integer points, boolean all) {
 		Map<String, Prize> prizes = new HashMap<String, Prize>();
 		try {
 			Properties prizeProperties = new Properties();
