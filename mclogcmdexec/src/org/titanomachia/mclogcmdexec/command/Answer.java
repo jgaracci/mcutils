@@ -9,7 +9,7 @@ public class Answer extends Command {
 
 	@Override
 	public void execute() {
-		Problem<?> problem = ApplicationContext.getValue("quiz.problem." + getUser());
+		Problem<Problem<?>> problem = ApplicationContext.getValue("quiz.problem." + getUser());
 		
 		if (null == problem) {
 			return;

@@ -25,8 +25,8 @@ public class Quiz extends Command {
 	    	
 	    	Integer level = Integer.valueOf(getArgs().substring(nextIndex + 1));
 	    	
-	    	if (level < 1 || level > 4) {
-	    		CommandUtils.writeToConsole("Level must be 1-4", getUser());
+	    	if (level < 1 || level > 3) {
+	    		CommandUtils.writeToConsole("Level must be 1-3", getUser());
 	    		return;
 	    	}
 	    	
@@ -46,7 +46,7 @@ public class Quiz extends Command {
     
     private void showUsage() {
     	CommandUtils.writeToConsole("Usage: Quiz {type {subtype}} {level}", getUser());
-    	CommandUtils.writeToConsole("supported quizes - Math {+, -, *, /} {1-4}", getUser());
+    	CommandUtils.writeToConsole("supported quizes - Math {+, -, *, /} {1-3}", getUser());
     	CommandUtils.writeToConsole("e.g. quiz math + 1", getUser());
     }
 }

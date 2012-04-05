@@ -104,7 +104,8 @@ public abstract class ProblemTypeFactory<T extends Problem<?>> {
 				"/".equals(operator) ? String.valueOf(arg1 / arg2) : "";
 		}
 
-		public Integer getLevel() {
+		@Override
+        public Integer getLevel() {
 			return level;
 		}
 		
@@ -119,6 +120,10 @@ public abstract class ProblemTypeFactory<T extends Problem<?>> {
 				if (problem.getLevel().equals(level) && problem.operator.equals(operator)) {
 					equalProblemLevelStreak++;
 				}
+			}
+			
+			if (equalProblemLevelStreak > 10) {
+			    equalProblemLevelStreak = 10;
 			}
 			
 			return equalProblemLevelStreak * level * baseValue;
