@@ -20,4 +20,9 @@ public class GameMode extends Command {
             LOG.error( "Failed to exec: ", e );
         }
     }
+
+	@Override
+	public String getDescription() {
+		return "changes the gamemode between 0 - Survival and 1 - Creative";
+	}
 }

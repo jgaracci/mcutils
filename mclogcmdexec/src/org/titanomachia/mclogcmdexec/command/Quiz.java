@@ -49,4 +49,9 @@ public class Quiz extends Command {
     	CommandUtils.writeToConsole("supported quizes - Math {+, -, *, /} {1-3}", getUser());
     	CommandUtils.writeToConsole("e.g. quiz math + 1", getUser());
     }
+
+	@Override
+	public String getDescription() {
+		return "gives you a quiz. Type \"/quiz\" for more help";
+	}
 }

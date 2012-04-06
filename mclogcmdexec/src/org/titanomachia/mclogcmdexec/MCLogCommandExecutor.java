@@ -28,12 +28,12 @@ public class MCLogCommandExecutor {
             
             Map<String, CommandMetaData> COMMANDS = new CommandPropertiesLoader().loadCommands();
             
-            final CommandFactory factory = new CommandFactory(COMMANDS);
+            ApplicationContext.setCommandFactory(new CommandFactory(COMMANDS));
             
             DataFeedReader reader = new DataFeedReader( new TailFileReader(file) ) {
                 @Override
                 protected void processData( String line ) {
-                    Command command = factory.getCommand( line );
+                    Command command = ApplicationContext.getFactory().getCommand( line );
                     if (null != command) {
                     	try {
                     		command.execute();

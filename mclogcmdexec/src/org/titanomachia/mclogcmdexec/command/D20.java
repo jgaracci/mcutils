@@ -25,4 +25,9 @@ public class D20 extends Command {
             LOG.error( "Failed to exec: ", e );
         }
     }
+
+	@Override
+	public String getDescription() {
+		return "rolls a 20-sided die";
+	}
 }

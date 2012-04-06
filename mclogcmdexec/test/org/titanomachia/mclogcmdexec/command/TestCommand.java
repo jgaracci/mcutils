@@ -8,4 +8,9 @@ public class TestCommand extends Command {
 	public void execute() {
 		System.out.println("Test");
 	}
+
+	@Override
+	public String getDescription() {
+		return "test";
+	}
 }

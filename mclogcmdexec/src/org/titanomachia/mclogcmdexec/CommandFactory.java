@@ -1,13 +1,16 @@
 package org.titanomachia.mclogcmdexec;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
 import org.titanomachia.mclogcmdexec.command.Command;
 
 public class CommandFactory {
-    private static Pattern CONSOLE_COMMAND_PATTERN = Pattern.compile( "^.+<([A-Za-z_0-9]*)> ([^ ]*)[ ]{0,1}(([^ ]*[ ]{0,1})*)" );
+    private static Pattern CONSOLE_COMMAND_PATTERN = Pattern.compile( "^.+[]] ([A-Za-z_0-9]*) issued server command: ([^ ]*)[ ]{0,1}(([^ ]*[ ]{0,1})*)" );
     
     private Map<String, CommandMetaData> metaDataByName;
     
@@ -49,5 +52,16 @@ public class CommandFactory {
             }
         }
         return command;
+    }
+    
+    public List<String> printHelp() {
+    	List<String> help = new ArrayList<String>();
+    	
+    	for(String name : metaDataByName.keySet()) {
+    		Command command = createCommand(name, null);
+    		help.add(StringUtils.rightPad(name, 8) + "-  " + command.getDescription());
+    	}
+    	
+    	return help;
     }
 }

@@ -21,6 +21,8 @@ public class ApplicationContext {
 	private static Map<String, Object> DATA = new HashMap<String, Object>();
 	
 	private static String filePath;
+
+	private static CommandFactory factory;
 	
 	public static void setFilePath(String filePath) {
 		ApplicationContext.filePath = filePath;
@@ -118,5 +120,13 @@ public class ApplicationContext {
 
 	public static void clearValue(String key) {
 		DATA.remove( key );
+	}
+
+	public static void setCommandFactory(CommandFactory factory) {
+		ApplicationContext.factory = factory;
+	}
+
+	public static CommandFactory getFactory() {
+		return factory;
 	}
 }

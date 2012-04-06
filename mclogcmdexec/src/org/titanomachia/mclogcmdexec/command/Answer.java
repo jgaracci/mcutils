@@ -66,4 +66,9 @@ public class Answer extends Command {
 		
 		ApplicationContext.clearValue("quiz.problem." + getUser());
 	}
+
+	@Override
+	public String getDescription() {
+		return "answers the current problem, e.g. /answer 453";
+	}
 }

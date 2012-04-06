@@ -20,4 +20,10 @@ public class Move extends Command {
             LOG.error( "Failed to exec: ", e );
         }
     }
+
+	@Override
+	public String getDescription() {
+		return "moves {source} to {target} location, e.g. /move jimbob billyjoe";
+	}
+    
 }

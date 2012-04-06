@@ -160,13 +160,18 @@ public class Prizes extends Command {
 	private void writePrizeToConsole(String id, Prize prize) {
 		CommandUtils.writeToConsole(StringUtils.rightPad(id, 6) + "|" + StringUtils.leftPad(String.valueOf(prize.count), 4) + " " + StringUtils.rightPad(prize.name, 15) + prize.cost, getUser());
 	}
-
+	
 //	private void showUsage() {
 //    	CommandUtils.writeToConsole("Usage: Prizes {prizeId {count}}", getUser());
 //    	CommandUtils.writeToConsole("Prizes by itself will list available prize Ids", getUser());
 //    	CommandUtils.writeToConsole("e.g. Prizes 11 2", getUser());
 //    }
 	
+	@Override
+	public String getDescription() {
+		return "lists prizes you can afford, all \"/prizes list\", or buys a prize \"/prizes {code} {number}\", e.g. /prize co 4";
+	}
+
 	static class Prize {
 		String name;
 		Integer typeId;

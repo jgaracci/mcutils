@@ -20,4 +20,9 @@ public class WhiteList extends Command {
             LOG.error( "Failed to exec: ", e );
         }
     }
+
+	@Override
+	public String getDescription() {
+		return "change the whilelist, add/remove a player, e.g. /whitelist add jimbob";
+	}
 }
