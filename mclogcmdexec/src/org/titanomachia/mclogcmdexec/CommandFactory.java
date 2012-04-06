@@ -10,7 +10,8 @@ import org.apache.commons.lang.StringUtils;
 import org.titanomachia.mclogcmdexec.command.Command;
 
 public class CommandFactory {
-    private static Pattern CONSOLE_COMMAND_PATTERN = Pattern.compile( "^.+[]] ([A-Za-z_0-9]*) issued server command: ([^ ]*)[ ]{0,1}(([^ ]*[ ]{0,1})*)" );
+    private static Pattern USER_COMMAND_PATTERN = Pattern.compile( "^.+[]] ([A-Za-z_0-9]*) tried command: ([^ ]*)[ ]{0,1}(([^ ]*[ ]{0,1})*)" );
+    private static Pattern SERVER_COMMAND_PATTERN = Pattern.compile( "^.+[]] ([A-Za-z_0-9]*) issued server command: ([^ ]*)[ ]{0,1}(([^ ]*[ ]{0,1})*)" );
     
     private Map<String, CommandMetaData> metaDataByName;
     
@@ -21,8 +22,13 @@ public class CommandFactory {
     public Command getCommand(String line) {
         Command command = null;
         
-        Matcher matcher = CONSOLE_COMMAND_PATTERN.matcher( line );
-        if (matcher.matches()) {
+        Matcher matcher = USER_COMMAND_PATTERN.matcher( line );
+        boolean matches = matcher.matches();
+        if (!matches) {
+        	matcher = SERVER_COMMAND_PATTERN.matcher( line );
+        	matches = matcher.matches();
+        }
+        if (matches) {
             String user = matcher.group( 1 );
             String commandName = matcher.group( 2 ).toUpperCase();
             String args = matcher.group( 3 );
