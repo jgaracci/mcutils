@@ -23,6 +23,6 @@ public class WhiteList extends Command {
 
 	@Override
 	public String getDescription() {
-		return "change the whilelist, add/remove a player, e.g. /whitelist add jimbob";
+		return "change the whilelist, add/remove a player, e.g. /xwhitelist add jimbob";
 	}
 }

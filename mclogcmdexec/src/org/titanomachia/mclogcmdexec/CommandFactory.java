@@ -54,12 +54,12 @@ public class CommandFactory {
         return command;
     }
     
-    public List<String> printHelp() {
+    public List<String> printHelp(String user) {
     	List<String> help = new ArrayList<String>();
     	
     	for(String name : metaDataByName.keySet()) {
-    		Command command = createCommand(name, null);
-    		help.add(StringUtils.rightPad(name, 8) + "-  " + command.getDescription());
+    		Command command = createCommand(name, user);
+    		help.add(StringUtils.rightPad(name, 9) + " - " + command.getDescription());
     	}
     	
     	return help;
