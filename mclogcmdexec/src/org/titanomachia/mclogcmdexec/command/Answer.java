@@ -51,16 +51,17 @@ public class Answer extends Command {
 			if (null != streak && streak.size() > 0) {
 				response += ". You had a streak of " + streak.size() + " going.";
 				
-				Integer currentPoints = ApplicationContext.getValue("quiz.points." + getUser());
-				if (null == currentPoints) {
-					currentPoints = 0;
-				}
-				
-				response += ". You have " + currentPoints + " point" + (currentPoints == 1 ? "" : "s");
-
-		        CommandUtils.writeToConsole(response, getUser());
+				ApplicationContext.setValue("quiz.streak." + getUser(), new ArrayList<Problem<?>>());
 			}
-			ApplicationContext.setValue("quiz.streak." + getUser(), new ArrayList<Problem<?>>());
+			
+			Integer currentPoints = ApplicationContext.getValue("quiz.points." + getUser());
+			if (null == currentPoints) {
+				currentPoints = 0;
+			}
+			
+			response += ". You have " + currentPoints + " point" + (currentPoints == 1 ? "" : "s");
+
+	        CommandUtils.writeToConsole(response, getUser());
 		}
 		
 		ApplicationContext.clearValue("quiz.problem." + getUser());
