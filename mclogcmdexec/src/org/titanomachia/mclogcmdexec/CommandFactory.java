@@ -65,7 +65,9 @@ public class CommandFactory {
     	
     	for(String name : metaDataByName.keySet()) {
     		Command command = createCommand(name, user);
-    		help.add(StringUtils.rightPad(name, 9) + " - " + command.getDescription());
+    		if (null != command) {
+    			help.add(StringUtils.rightPad(name, 9) + " - " + command.getDescription());
+    		}
     	}
     	
     	return help;
