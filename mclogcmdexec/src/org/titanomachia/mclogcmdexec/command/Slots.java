@@ -30,16 +30,16 @@ import org.titanomachia.mclogcmdexec.ApplicationContext;
 public class Slots extends Command {
 	enum Outcome {
 		// See the slots_odds.ods Spreadsheet for adjusting these
-		Bell("Bell", 			16),
-		DoubleBar("=Bar=",      10),
-		Grapes("Grapes", 		12), 
-		Orange("Orange", 		 8), 
+		Creeper("Creeper", 		16), 
+		Cow("Cow",              10),
+		Skeleton("Skeleton", 	12),
+		Zombie("Zombie", 		 8),
 		Apple("Apple", 			 4), 
-		Bar("-Bar-", 		     5),
-		Cherry("Cherry", 		 1), 
-		Lemon("Lemon", 			 3), 
+		Pig("Pig", 		         5),
+		Chicken("Chicken", 		 1),
+		Sheep("Sheep", 			 3),
 		Melon("Melon", 			 2),
-		Banana("Banana", 		 1),
+		Spider("Spider", 		 1),
 		;
 		
 		private String name;
@@ -62,16 +62,16 @@ public class Slots extends Command {
 	public Map<Outcome, int[]> getProbs() {
 		Map<Outcome, int[]> probs = new HashMap<Outcome, int[]>();
 		
-		probs.put(Outcome.Bell,      new int[] { 95, 96, 95 });
-		probs.put(Outcome.DoubleBar, new int[] { 93, 92, 65 });
-		probs.put(Outcome.Grapes,    new int[] { 88, 89, 41 });
-		probs.put(Outcome.Orange,    new int[] { 80, 87, 40 });
+		probs.put(Outcome.Creeper,   new int[] { 95, 96, 95 });
+		probs.put(Outcome.Cow,       new int[] { 93, 92, 65 });
+		probs.put(Outcome.Skeleton,  new int[] { 88, 89, 41 });
+		probs.put(Outcome.Zombie,    new int[] { 80, 87, 40 });
 		probs.put(Outcome.Apple,     new int[] { 80, 80, 20 });
-		probs.put(Outcome.Bar,       new int[] { 72, 72, 30 });
-		probs.put(Outcome.Cherry,    new int[] { 68, 68, 70 });
-		probs.put(Outcome.Lemon,     new int[] {  0, 60, 30 });
+		probs.put(Outcome.Pig,       new int[] { 72, 72, 30 });
+		probs.put(Outcome.Chicken,   new int[] { 68, 68, 70 });
+		probs.put(Outcome.Sheep,     new int[] {  0, 60, 30 });
 		probs.put(Outcome.Melon,     new int[] { 60, 30,  0 });
-		probs.put(Outcome.Banana,    new int[] { 30, 0,  60 });
+		probs.put(Outcome.Spider,    new int[] { 30,  0, 60 });
 		
 		return probs;
 	}
@@ -95,7 +95,7 @@ public class Slots extends Command {
 		// three of a kind
 		if (outcomes[0] == outcomes[1] && outcomes[1] == outcomes[2]) {
 			// Triple Bell wins the current jackpot
-			if (outcomes[0] == Outcome.Bell) {
+			if (outcomes[0] == Outcome.Creeper) {
 				payout = jackpot;
 
 				// Only do this stuff if we aren't determining for payout report
@@ -105,7 +105,7 @@ public class Slots extends Command {
 					setContextValue("slots.jackpot", 100);
 				}
 			}
-			else if (outcomes[0] == Outcome.Cherry) {
+			else if (outcomes[0] == Outcome.Chicken) {
 				// Triple Cherry has special payout
 				payout = 12 * wager;
 			}
@@ -116,50 +116,50 @@ public class Slots extends Command {
 		}
 		else if (outcomes[0] == outcomes[1]) {
 			// Any two Bar or two DoubleBar or Cherry pays wager * outcome payout
-			if (outcomes[0] == Outcome.Bar || outcomes[0] == Outcome.DoubleBar || outcomes[2] == Outcome.Cherry) {
+			if (outcomes[0] == Outcome.Pig || outcomes[0] == Outcome.Cow || outcomes[2] == Outcome.Chicken) {
 				payout = outcomes[0].getPayout() * wager;
 			}
 			// Any two with Bar or Double Bar, or Any two Cherry pays double wager * outcome payout
-			else if (outcomes[2] == Outcome.Bar || outcomes[2] == Outcome.DoubleBar) {
+			else if (outcomes[2] == Outcome.Pig || outcomes[2] == Outcome.Cow) {
 				payout = outcomes[0].getPayout() * 2 * wager;
 			}
-			else if (outcomes[0] == Outcome.Cherry) {
+			else if (outcomes[0] == Outcome.Chicken) {
 			    payout = outcomes[0].getPayout() * 4 * wager;
 			}
 		}
 		else if (outcomes[1] == outcomes[2]) {
 			// Any two Bar or two DoubleBar or Cherry pays wager * outcome payout
-			if (outcomes[1] == Outcome.Bar || outcomes[1] == Outcome.DoubleBar || outcomes[0] == Outcome.Cherry) {
+			if (outcomes[1] == Outcome.Pig || outcomes[1] == Outcome.Cow || outcomes[0] == Outcome.Chicken) {
 				payout = outcomes[1].getPayout() * wager;
 			}
 			// Any two with Bar or Double Bar, or Any two Cherry pays double wager * outcome payout
-			else if (outcomes[0] == Outcome.Bar || outcomes[0] == Outcome.DoubleBar) {
+			else if (outcomes[0] == Outcome.Pig || outcomes[0] == Outcome.Cow) {
 				payout = outcomes[1].getPayout() * 2 * wager;
 			}
-            else if (outcomes[0] == Outcome.Cherry) {
+            else if (outcomes[0] == Outcome.Chicken) {
                 payout = outcomes[1].getPayout() * 4 * wager;
             }
 		}
 		else if (outcomes[0] == outcomes[2]) {
 			// Any two Bar or two DoubleBar or Cherry pays wager * outcome payout
-			if (outcomes[0] == Outcome.Bar || outcomes[0] == Outcome.DoubleBar || outcomes[1] == Outcome.Cherry) {
+			if (outcomes[0] == Outcome.Pig || outcomes[0] == Outcome.Cow || outcomes[1] == Outcome.Chicken) {
 				payout = outcomes[0].getPayout() * wager;
 			}
 			// Any two with Bar or Double Bar, or Any two Cherry pays double wager * outcome payout
-			else if (outcomes[1] == Outcome.Bar || outcomes[1] == Outcome.DoubleBar) {
+			else if (outcomes[1] == Outcome.Pig || outcomes[1] == Outcome.Cow) {
 				payout = outcomes[0].getPayout() * 2 * wager;
 			}
-            else if (outcomes[0] == Outcome.Cherry) {
+            else if (outcomes[0] == Outcome.Chicken) {
                 payout = outcomes[0].getPayout() * 4 * wager;
             }
 		}
 		else {
 			// Any single Cherry basically returns the wager
-			boolean cherry = outcomes[0] == Outcome.Cherry ||
-				outcomes[1] == Outcome.Cherry ||
-				outcomes[2] == Outcome.Cherry;
+			boolean cherry = outcomes[0] == Outcome.Chicken ||
+				outcomes[1] == Outcome.Chicken ||
+				outcomes[2] == Outcome.Chicken;
 			if (cherry) {
-				payout = Outcome.Cherry.getPayout() * wager;
+				payout = Outcome.Chicken.getPayout() * wager;
 			}
 		}
 
@@ -194,17 +194,17 @@ public class Slots extends Command {
 			List<String> payouts = new ArrayList<String>();
 			
 			payouts.add("    ======== Slots Payouts ========");
-			payouts.add("    BELL   BELL   BELL --> *** JACKPOT ***");
-            payouts.add("    THREE MATCHING --> 3 * Value" );
-            payouts.add("    CHERRY CHERRY CHERRY --> 12" );
-			payouts.add("    ANY TWO *BAR* --> *Bar* Value" );
-            payouts.add("    TWO MATCHING + *BAR* --> 2 * Value" );
-            payouts.add("    TWO CHERRY --> " + 4 * Outcome.Cherry.payout + "     ANY CHERRY --> " + Outcome.Cherry.payout);
+			payouts.add("    CREEPER CREEPER CREEPER --> *** JACKPOT ***");
+            payouts.add("    THREE MATCHING                           --> 3 * Value" );
+            payouts.add("    CHICKEN CHICKEN CHICKEN      --> 12" );
+			payouts.add("    ANY TWO COW|PIG                           --> COW/PIG Value" );
+            payouts.add("    TWO MATCHING + COW|PIG           --> 2 * Value" );
+            payouts.add("    TWO CHICKEN       --> " + 4 * Outcome.Chicken.payout + "      ANY CHICKEN      --> " + Outcome.Chicken.payout);
             payouts.add("        ------------ Payout Values ------------");
             int i = 0;
             String payoutStr = "";
             for(Outcome outcome : Outcome.values()) {
-                if (outcome != Outcome.Cherry) {
+                if (outcome != Outcome.Chicken) {
                     payoutStr += outcome.getName() + " --> " + outcome.getPayout();
                     i++;
                     if (i % 3 == 0) {
@@ -223,27 +223,27 @@ public class Slots extends Command {
 		
 		if ("ODDS".equals(getArgs().toUpperCase())) {
 			List<String> outcomes = new ArrayList<String>();
-			outcomes.add("    ======== Slots Odds ========");
+			outcomes.add("    ============ Slots Odds ============");
 			int totalOdds = 0;
             String oddsStr = "";
             int j = 0;
 			for(int i = 0; i < Outcome.values().length;) {
 				int probs[] = getProbs().get(Outcome.values()[i / 2 + j]);
 				int odds = (100 - probs[0]) * (100 - probs[1]) * (100 - probs[2]);
-				if (Outcome.Banana == Outcome.values()[i / 2 + j]) {
+				if (Outcome.Spider == Outcome.values()[i / 2 + j]) {
 					odds = 1000000 - totalOdds;
 				}
 				else {
 					totalOdds += odds;
 				}
-				oddsStr += Outcome.values()[i / 2 + j].getName() + " --> 1 in " + Math.round(1000000 / (double)odds);
+				oddsStr += StringUtils.rightPad(Outcome.values()[i / 2 + j].getName(), 10) + " --> 1 in " + Math.round(1000000 / (double)odds);
 				i++;
                 if (i % 2 == 0) {
                     outcomes.add("    " + oddsStr);
                     oddsStr = "";
                 }
                 else {
-                    oddsStr += "      ";
+                    oddsStr += "            ";
                 }
                 j += 5;
                 j %= 10;
