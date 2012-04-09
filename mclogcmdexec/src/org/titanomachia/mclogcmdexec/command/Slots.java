@@ -31,11 +31,11 @@ public class Slots extends Command {
 	enum Outcome {
 		// See the slots_odds.ods Spreadsheet for adjusting these
 		Bell("Bell", 			16),
-		DoubleBar("Double Bar", 10),
+		DoubleBar("=Bar=",      10),
 		Grapes("Grapes", 		12), 
 		Orange("Orange", 		 8), 
 		Apple("Apple", 			 4), 
-		Bar("Bar", 				 5),
+		Bar("-Bar-", 		     5),
 		Cherry("Cherry", 		 1), 
 		Lemon("Lemon", 			 3), 
 		Melon("Melon", 			 2),
@@ -120,8 +120,11 @@ public class Slots extends Command {
 				payout = outcomes[0].getPayout() * wager;
 			}
 			// Any two with Bar or Double Bar, or Any two Cherry pays double wager * outcome payout
-			else if (outcomes[2] == Outcome.Bar || outcomes[2] == Outcome.DoubleBar || outcomes[0] == Outcome.Cherry) {
+			else if (outcomes[2] == Outcome.Bar || outcomes[2] == Outcome.DoubleBar) {
 				payout = outcomes[0].getPayout() * 2 * wager;
+			}
+			else if (outcomes[0] == Outcome.Cherry) {
+			    payout = outcomes[0].getPayout() * 4 * wager;
 			}
 		}
 		else if (outcomes[1] == outcomes[2]) {
@@ -130,9 +133,12 @@ public class Slots extends Command {
 				payout = outcomes[1].getPayout() * wager;
 			}
 			// Any two with Bar or Double Bar, or Any two Cherry pays double wager * outcome payout
-			else if (outcomes[0] == Outcome.Bar || outcomes[0] == Outcome.DoubleBar || outcomes[1] == Outcome.Cherry) {
+			else if (outcomes[0] == Outcome.Bar || outcomes[0] == Outcome.DoubleBar) {
 				payout = outcomes[1].getPayout() * 2 * wager;
 			}
+            else if (outcomes[0] == Outcome.Cherry) {
+                payout = outcomes[1].getPayout() * 4 * wager;
+            }
 		}
 		else if (outcomes[0] == outcomes[2]) {
 			// Any two Bar or two DoubleBar or Cherry pays wager * outcome payout
@@ -140,9 +146,12 @@ public class Slots extends Command {
 				payout = outcomes[0].getPayout() * wager;
 			}
 			// Any two with Bar or Double Bar, or Any two Cherry pays double wager * outcome payout
-			else if (outcomes[1] == Outcome.Bar || outcomes[1] == Outcome.DoubleBar || outcomes[0] == Outcome.Cherry) {
+			else if (outcomes[1] == Outcome.Bar || outcomes[1] == Outcome.DoubleBar) {
 				payout = outcomes[0].getPayout() * 2 * wager;
 			}
+            else if (outcomes[0] == Outcome.Cherry) {
+                payout = outcomes[0].getPayout() * 4 * wager;
+            }
 		}
 		else {
 			// Any single Cherry basically returns the wager
@@ -184,27 +193,29 @@ public class Slots extends Command {
 		if ("PAYOUT".equals(getArgs().toUpperCase())) {
 			List<String> payouts = new ArrayList<String>();
 			
-			payouts.add("Slots Payouts");
-			int payout = 0;
-			for(Outcome outcome : Outcome.values()) {
-				payout = determinePayout(new Outcome[]{outcome,outcome,outcome}, 1, true);
-				if (Outcome.Bell == outcome) {
-					payouts.add("3 " + outcome.getName() + " --> *** JACKPOT ***");
-				}
-				else {
-					payouts.add("3 " + outcome.getName() + " --> " + payout);
-				}
-				if (Outcome.Bar != outcome && Outcome.DoubleBar != outcome) {
-					payout = determinePayout(new Outcome[]{outcome,outcome,Outcome.Bar}, 1, true);
-					payouts.add("Any 2 " + outcome.getName() + " + Bar(s) --> " + payout);
-				}
-				else {
-					payout = determinePayout(new Outcome[]{outcome,outcome,Outcome.Banana}, 1, true);
-					payouts.add("2 " + outcome.getName() + " + Any --> " + payout);
-				}
+			payouts.add("    ======== Slots Payouts ========");
+			payouts.add("    BELL   BELL   BELL --> *** JACKPOT ***");
+            payouts.add("    THREE MATCHING --> 3 * Value" );
+            payouts.add("    CHERRY CHERRY CHERRY --> 12" );
+			payouts.add("    ANY TWO *BAR* --> *Bar* Value" );
+            payouts.add("    TWO MATCHING + *BAR* --> 2 * Value" );
+            payouts.add("    TWO CHERRY --> " + 4 * Outcome.Cherry.payout + "     ANY CHERRY --> " + Outcome.Cherry.payout);
+            payouts.add("        ------------ Payout Values ------------");
+            int i = 0;
+            String payoutStr = "";
+            for(Outcome outcome : Outcome.values()) {
+                if (outcome != Outcome.Cherry) {
+                    payoutStr += outcome.getName() + " --> " + outcome.getPayout();
+                    i++;
+                    if (i % 3 == 0) {
+                        payouts.add("    " + payoutStr);
+                        payoutStr = "";
+                    }
+                    else {
+                        payoutStr += "      ";
+                    }
+                }
 			}	
-			payout = determinePayout(new Outcome[]{Outcome.Banana, Outcome.Cherry, Outcome.Banana}, 1, true);
-			payouts.add("Any + " + Outcome.Cherry + " --> " + payout);
 			
 			displayMessages(payouts.toArray(new String[0]), getUser());
 			return;
@@ -212,18 +223,30 @@ public class Slots extends Command {
 		
 		if ("ODDS".equals(getArgs().toUpperCase())) {
 			List<String> outcomes = new ArrayList<String>();
-			outcomes.add("Slots Odds");
+			outcomes.add("    ======== Slots Odds ========");
 			int totalOdds = 0;
-			for(Outcome outcome : Outcome.values()) {
-				int probs[] = getProbs().get(outcome);
+            String oddsStr = "";
+            int j = 0;
+			for(int i = 0; i < Outcome.values().length;) {
+				int probs[] = getProbs().get(Outcome.values()[i / 2 + j]);
 				int odds = (100 - probs[0]) * (100 - probs[1]) * (100 - probs[2]);
-				if (Outcome.Banana == outcome) {
+				if (Outcome.Banana == Outcome.values()[i / 2 + j]) {
 					odds = 1000000 - totalOdds;
 				}
 				else {
 					totalOdds += odds;
 				}
-				outcomes.add(outcome.getName() + " --> 1 in " + Math.round(1000000 / (double)odds));
+				oddsStr += Outcome.values()[i / 2 + j].getName() + " --> 1 in " + Math.round(1000000 / (double)odds);
+				i++;
+                if (i % 2 == 0) {
+                    outcomes.add("    " + oddsStr);
+                    oddsStr = "";
+                }
+                else {
+                    oddsStr += "      ";
+                }
+                j += 5;
+                j %= 10;
 			}	
 			
 			displayMessages(outcomes.toArray(new String[0]), getUser());
