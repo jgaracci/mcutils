@@ -196,26 +196,26 @@ public class Slots extends Command {
 		if ("PAYOUT".equals(getArgs().toUpperCase())) {
 			List<String> payouts = new ArrayList<String>();
 			
-			payouts.add("    ======== Slots Payouts ========");
-			payouts.add("    CREEPER CREEPER CREEPER --> *** JACKPOT ***");
-            payouts.add("    THREE MATCHING                           --> 3 * Value" );
-            payouts.add("    CHICKEN CHICKEN CHICKEN      --> 12" );
-			payouts.add("    ANY TWO COW|PIG                           --> COW/PIG Value" );
-            payouts.add("    TWO MATCHING + COW|PIG           --> 2 * Value" );
-            payouts.add("    TWO CHICKEN       --> " + 4 * Outcome.Chicken.payout + "      ANY CHICKEN      --> " + Outcome.Chicken.payout);
+			payouts.add("    ============ Slots Payouts ============");
+			payouts.add("    CREEPER CREEPER CREEPER   [JACKPOT]");
+            payouts.add("    THREE MATCHING                [3 * Value]" );
+            payouts.add("    CHICKEN CHICKEN CHICKEN    [12]" );
+			payouts.add("    ANY TWO COW|PIG                [COW|PIG Value]" );
+            payouts.add("    TWO MATCHING + COW|PIG      [2 * Value]" );
+            payouts.add("    TWO CHICKEN    [" + 4 * Outcome.Chicken.payout + "]     ANY CHICKEN    [" + Outcome.Chicken.payout + "]");
             payouts.add("        ------------ Payout Values ------------");
             int i = 0;
             String payoutStr = "";
             for(Outcome outcome : Outcome.values()) {
                 if (outcome != Outcome.Chicken) {
-                    payoutStr += outcome.getName() + " --> " + outcome.getPayout();
+                    payoutStr += StringUtils.rightPad(outcome.getName() + " [" + outcome.getPayout() + "]", 8);
                     i++;
                     if (i % 3 == 0) {
-                        payouts.add("    " + payoutStr);
+                        payouts.add("     " + payoutStr);
                         payoutStr = "";
                     }
                     else {
-                        payoutStr += "      ";
+                        payoutStr += "     ";
                     }
                 }
 			}	
@@ -226,7 +226,7 @@ public class Slots extends Command {
 		
 		if ("ODDS".equals(getArgs().toUpperCase())) {
 			List<String> outcomes = new ArrayList<String>();
-			outcomes.add("    ============ Slots Odds ============");
+			outcomes.add("    ============= Slots Odds =============");
             String oddsStr = "";
             int j = 0;
 			for(int i = 0; i < Outcome.values().length;) {
@@ -235,14 +235,14 @@ public class Slots extends Command {
 				int prob1 = probs[1];
 				int prob2 = probs[2];
 				int odds = 1000000 / ((100 - prob0) * (100 - prob1) * (100 - prob2));
-				oddsStr += StringUtils.rightPad(Outcome.values()[i / 2 + j].getName(), 10) + " --> 1 in " + odds;
+				oddsStr += StringUtils.rightPad(Outcome.values()[i / 2 + j].getName(), 8) + " [1 in " + odds + "]";
 				i++;
                 if (i % 2 == 0) {
-                    outcomes.add("    " + oddsStr);
+                    outcomes.add("     " + oddsStr);
                     oddsStr = "";
                 }
                 else {
-                    oddsStr += "            ";
+                    oddsStr += "     ";
                 }
                 j += 5;
                 j %= 10;
