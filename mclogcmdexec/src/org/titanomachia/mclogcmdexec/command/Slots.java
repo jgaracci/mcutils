@@ -327,13 +327,15 @@ public class Slots extends Command {
 		if (turns > 1) {
 			messages.add("Your net winnings => " + net + " points");
 		}
-
-		Integer jackpot = getContextValue("slots.jackpot");
-		showJackpot(jackpot);
-		
-		showPoints(points);
 		
 		displayMessages(messages.toArray(new String[messages.size()]), getUser());
+
+		if (turns > 1) {
+			Integer jackpot = getContextValue("slots.jackpot");
+			showJackpot(jackpot);
+			
+			showPoints(points);
+		}
 		
 		setContextValue("quiz.points." + getUser(), points);
 	}
