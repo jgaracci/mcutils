@@ -17,6 +17,7 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
@@ -34,8 +35,8 @@ public class Slots extends Command {
 		Cow("Cow",              10),
 		Skeleton("Skeleton", 	12),
 		Zombie("Zombie", 		 8),
-		Apple("Apple", 			 4), 
 		Pig("Pig", 		         5),
+		Apple("Apple", 			 4), 
 		Chicken("Chicken", 		 1),
 		Sheep("Sheep", 			 3),
 		Melon("Melon", 			 2),
@@ -62,16 +63,16 @@ public class Slots extends Command {
 	public Map<Outcome, int[]> getProbs() {
 		Map<Outcome, int[]> probs = new HashMap<Outcome, int[]>();
 		
-		probs.put(Outcome.Creeper,   new int[] { 95, 96, 95 });
-		probs.put(Outcome.Cow,       new int[] { 93, 92, 65 });
-		probs.put(Outcome.Skeleton,  new int[] { 88, 89, 41 });
-		probs.put(Outcome.Zombie,    new int[] { 80, 87, 40 });
-		probs.put(Outcome.Apple,     new int[] { 80, 80, 20 });
-		probs.put(Outcome.Pig,       new int[] { 72, 72, 30 });
-		probs.put(Outcome.Chicken,   new int[] { 68, 68, 70 });
-		probs.put(Outcome.Sheep,     new int[] {  0, 60, 30 });
-		probs.put(Outcome.Melon,     new int[] { 60, 30,  0 });
-		probs.put(Outcome.Spider,    new int[] { 30,  0, 60 });
+		probs.put(Outcome.Creeper,   new int[] { 90, 90, 90 });
+		probs.put(Outcome.Cow,       new int[] { 85, 85, 85 });
+		probs.put(Outcome.Skeleton,  new int[] { 80, 80, 80 });
+		probs.put(Outcome.Zombie,    new int[] { 70, 70, 70 });
+		probs.put(Outcome.Pig,       new int[] { 65, 65, 65 });
+		probs.put(Outcome.Apple,     new int[] { 60, 60, 60 });
+		probs.put(Outcome.Chicken,   new int[] { 55, 55, 55 });
+		probs.put(Outcome.Sheep,     new int[] { 60, 60,  0 });
+		probs.put(Outcome.Melon,     new int[] { 45,  0, 45 });
+		probs.put(Outcome.Spider,    new int[] {  0, 40, 40 });
 		
 		return probs;
 	}
@@ -87,10 +88,15 @@ public class Slots extends Command {
 		return determined;
 	}
 
-	public int determinePayout(Outcome[] outcomes, int wager, boolean report) {
+	public int determinePayout(Outcome[] outcomes, int wager) {
 		int payout = 0;
 		
 		Integer jackpot = getContextValue("slots.jackpot");
+		if (null == jackpot) {
+			jackpot = 100;
+		}
+		
+		jackpot += (wager + 4) / 5;
 
 		// three of a kind
 		if (outcomes[0] == outcomes[1] && outcomes[1] == outcomes[2]) {
@@ -98,12 +104,9 @@ public class Slots extends Command {
 			if (outcomes[0] == Outcome.Creeper) {
 				payout = jackpot;
 
-				// Only do this stuff if we aren't determining for payout report
-				if (!report) {
-					displayMessage("*** Jackpot!!! ***", getUser());
-					
-					setContextValue("slots.jackpot", 100);
-				}
+				displayMessage("*** Jackpot!!! ***", getUser());
+				
+				jackpot = 100;
 			}
 			else if (outcomes[0] == Outcome.Chicken) {
 				// Triple Cherry has special payout
@@ -162,6 +165,8 @@ public class Slots extends Command {
 				payout = Outcome.Chicken.getPayout() * wager;
 			}
 		}
+		
+		setContextValue("slots.jackpot", jackpot);
 
 		return payout;
 	}
@@ -173,20 +178,18 @@ public class Slots extends Command {
 
 	@Override
 	public void execute() {
-		Integer jackpot = getContextValue("slots.jackpot");
-		if (null == jackpot || jackpot < 100) {
-			jackpot = 100;
-		}
-		
 		Integer points = getContextValue("quiz.points." + getUser());
 		if (null == points) {
 			points = 0;
 		}
 		
 		if (StringUtils.isEmpty(getArgs().trim())) {
-			displayMessages(new String[] {
-					"The current jackpot is " + jackpot + " points",
-					"You have " + points + " points" }, getUser());
+			Integer jackpot = getContextValue("slots.jackpot");
+			if (null == jackpot) {
+				jackpot = 100;
+			}
+			showJackpot(jackpot);
+			displayMessage("You have " + points + " points", getUser());
 			return;
 		}
 		
@@ -224,19 +227,15 @@ public class Slots extends Command {
 		if ("ODDS".equals(getArgs().toUpperCase())) {
 			List<String> outcomes = new ArrayList<String>();
 			outcomes.add("    ============ Slots Odds ============");
-			int totalOdds = 0;
             String oddsStr = "";
             int j = 0;
 			for(int i = 0; i < Outcome.values().length;) {
 				int probs[] = getProbs().get(Outcome.values()[i / 2 + j]);
-				int odds = (100 - probs[0]) * (100 - probs[1]) * (100 - probs[2]);
-				if (Outcome.Spider == Outcome.values()[i / 2 + j]) {
-					odds = 1000000 - totalOdds;
-				}
-				else {
-					totalOdds += odds;
-				}
-				oddsStr += StringUtils.rightPad(Outcome.values()[i / 2 + j].getName(), 10) + " --> 1 in " + Math.round(1000000 / (double)odds);
+				int prob0 = probs[0];
+				int prob1 = probs[1];
+				int prob2 = probs[2];
+				int odds = 1000000 / ((100 - prob0) * (100 - prob1) * (100 - prob2));
+				oddsStr += StringUtils.rightPad(Outcome.values()[i / 2 + j].getName(), 10) + " --> 1 in " + odds;
 				i++;
                 if (i % 2 == 0) {
                     outcomes.add("    " + oddsStr);
@@ -253,9 +252,12 @@ public class Slots extends Command {
 			return;
 		}
 		
+		String args = getArgs();
+		StringTokenizer tokenizer = new StringTokenizer(args, " ");
+		
 		Integer wager = null;
 		try {
-			wager = Integer.valueOf(getArgs());
+			wager = Integer.valueOf(tokenizer.nextToken());
 			if (wager > points) {
 				displayMessage("You don't have that many points", getUser());
 				return;
@@ -266,35 +268,78 @@ public class Slots extends Command {
 			return;
 		}
 		
+		Integer turns = null;
+		if (tokenizer.hasMoreTokens()) {
+			try {
+				turns = Integer.valueOf(tokenizer.nextToken());
+			}
+			catch (NumberFormatException e) {
+				showUsage();
+				return;
+			}
+		}
+		
 		Random rnd = new Random();
 
-		Outcome[] outcomes = new Outcome[3];
-		outcomes[0] = determineOutcome(rnd.nextInt(100), 0);
-		outcomes[1] = determineOutcome(rnd.nextInt(100), 1);
-		outcomes[2] = determineOutcome(rnd.nextInt(100), 2);
-		
-		showOutcome("[ " + outcomes[0].getName() + " | " + outcomes[1].getName() + " | " + outcomes[2].getName() + " ]", getUser());
-
-		points -= wager;
-		int payout = determinePayout(outcomes, wager, false);
-		if (payout > 0) {
-			points += payout;
-			displayMessage("You won " + payout, getUser());
-			showPoints(points);
+		if (null == turns) {
+			turns = 1;
 		}
-		else {
-			displayMessage("Sorry, try again", getUser());
-			showPoints(points);
-			if (wager > 10) {
-				jackpot += 10;
+		
+		int i = 0;
+		int net = 0;
+		List<String> messages = new ArrayList<String>();
+		for ( ; i < turns && points >= wager; i++) {
+			Outcome[] outcomes = new Outcome[3];
+			outcomes[0] = determineOutcome(rnd.nextInt(100), 0);
+			outcomes[1] = determineOutcome(rnd.nextInt(100), 1);
+			outcomes[2] = determineOutcome(rnd.nextInt(100), 2);
+			
+			String outcomeString = "[ " + outcomes[0].getName() + " | " + outcomes[1].getName() + " | " + outcomes[2].getName() + " ]";
+
+			if (turns == 1) {
+				messages.add(outcomeString);
 			}
 			else {
-				jackpot += wager;
+				showOutcome(outcomeString, getUser());
 			}
-			setContextValue("slots.jackpot", jackpot);
+			
+			net -= wager;
+			points -= wager;
+			int payout = determinePayout(outcomes, wager);
+			if (payout > 0) {
+				points += payout;
+				net += payout;
+				if (turns == 1) {
+					messages.add("You won " + payout);
+				}
+			}
+			else {
+				if (turns == 1) {
+					messages.add("Sorry, try again");
+				}
+			}
+		}
+				
+		if (i < turns) {
+			messages.add("Not enough points to continue...");
 		}
 		
+		if (turns > 1) {
+			messages.add("Your net winnings => " + net + " points");
+		}
+
+		Integer jackpot = getContextValue("slots.jackpot");
+		showJackpot(jackpot);
+		
+		showPoints(points);
+		
+		displayMessages(messages.toArray(new String[messages.size()]), getUser());
+		
 		setContextValue("quiz.points." + getUser(), points);
+	}
+
+	protected void showJackpot(Integer jackpot) {
+		displayMessage("The current jackpot is now " + jackpot + " points", getUser());
 	}
 
 	private void showUsage() {
@@ -306,7 +351,7 @@ public class Slots extends Command {
 	}
 	
 	protected void showOutcome(String message, String user) {
-		CommandUtils.writeToConsole(message, user);
+//		CommandUtils.writeToConsole(message, user);
 	}
 	
 	protected void showPoints(Integer points) {
@@ -367,6 +412,11 @@ public class Slots extends Command {
 				}
 
 				@Override
+				protected void showJackpot(Integer points) {
+					model.setJackpot(points);
+				}
+
+				@Override
 				@SuppressWarnings("unchecked")
 				protected <E> E getContextValue(String name) {
 					return (E)context.get(name);
@@ -387,6 +437,15 @@ public class Slots extends Command {
 				}
 			});
 			
+			view.setOddsAction(new AbstractAction() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					slots.setUser("test");
+					slots.setArgs("ODDS");
+					slots.execute();
+				}
+			});
+			
 			view.setAddCoinsAction(new AbstractAction() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -394,12 +453,15 @@ public class Slots extends Command {
 					if (null == points) {
 						points = 0;
 					}
-					slots.setContextValue("quiz.points.test", points + 100);
+					slots.setContextValue("quiz.points.test", points + 1000);
+					slots.showPoints(points + 1000);
 					slots.setArgs("");
 					slots.setUser("test");
 					slots.execute();
 				}
 			});
+			
+			model.setJackpot(100);
 			
 			JFrame frame = new JFrame("Slots");
 			frame.getContentPane().add(view.getComponent());
@@ -419,6 +481,7 @@ public class Slots extends Command {
 		private Document outcome3Model;
 		private Document messagesModel;
 		private Document wagerModel;
+		private Document jackpotModel;
 
 		public void initialize() {
 			coinsModel = new PlainDocument();
@@ -426,6 +489,7 @@ public class Slots extends Command {
 			outcome2Model = new PlainDocument();
 			outcome3Model = new PlainDocument();
 			wagerModel = new PlainDocument();
+			jackpotModel = new PlainDocument();
 			messagesModel = new PlainDocument();
 		}
 
@@ -451,6 +515,10 @@ public class Slots extends Command {
 
 		public Document getWagerModel() {
 			return wagerModel;
+		}
+
+		public Document getJackpotModel() {
+			return jackpotModel;
 		}
 
 		public Integer getCoins() {
@@ -510,6 +578,10 @@ public class Slots extends Command {
 			setText(wagerModel, String.valueOf(wager));
 		}
 		
+		public void setJackpot(Integer jackpot) {
+			setText(jackpotModel, String.valueOf(jackpot));
+		}
+		
 		private void setText(final Document document, final String text) {
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
@@ -537,11 +609,13 @@ public class Slots extends Command {
 		private JPanel panel;
 		private JTextField txtFldCoins;
 		private JTextField txtFldWager;
+		private JTextField txtFldJackpot;
 		private JTextField txtFldOutcome1;
 		private JTextField txtFldOutcome2;
 		private JTextField txtFldOutcome3;
 		private JTextArea txtAreaMessages;
 		private JButton btnPull;
+		private JButton btnOdds;
 		private JButton btnAddCoins;
 		
 		SlotsView() {
@@ -558,10 +632,16 @@ public class Slots extends Command {
 			btnAddCoins.setAction(action);
 			btnAddCoins.setText("+ $$");
 		}
+		
+		public void setOddsAction(Action action) {
+			btnOdds.setAction(action);
+			btnOdds.setText("Odds");
+		}
 
 		public void setModel(SlotsModel model) {
 			txtFldCoins.setDocument(model.getCoinsModel());
 			txtFldWager.setDocument(model.getWagerModel());
+			txtFldJackpot.setDocument(model.getJackpotModel());
 			txtFldOutcome1.setDocument(model.getOutcome1Model());
 			txtFldOutcome2.setDocument(model.getOutcome2Model());
 			txtFldOutcome3.setDocument(model.getOutcome3Model());
@@ -575,6 +655,10 @@ public class Slots extends Command {
 			txtFldCoins.setFocusable(false);
 			
 			txtFldWager = new JTextField();
+			
+			txtFldJackpot = new JTextField(10);
+			txtFldJackpot.setFocusable(false);
+			txtFldJackpot.setBorder(null);
 			
 			txtFldOutcome1 = new JTextField(6);
 			txtFldOutcome1.setFocusable(false);
@@ -594,6 +678,8 @@ public class Slots extends Command {
 			btnPull = new JButton();
 			
 			btnAddCoins = new JButton();
+			
+			btnOdds = new JButton();
 		}
 		
 		public void layoutComponents() {
@@ -618,15 +704,25 @@ public class Slots extends Command {
 			labelPanel.add(Box.createHorizontalStrut(6));
 			wagerPanel.add(labelPanel, BorderLayout.WEST);
 			wagerPanel.add(txtFldWager);
-			wagerPanel.add(btnPull, BorderLayout.EAST);
+			labelPanel = new JPanel();
+			labelPanel.add(Box.createHorizontalStrut(6));
+			labelPanel.add(btnPull, BorderLayout.EAST);
+			labelPanel.add(Box.createHorizontalStrut(20));
+			labelPanel.add(btnOdds, BorderLayout.EAST);
+			wagerPanel.add(labelPanel, BorderLayout.EAST);
 
 			JPanel messagesPanel = new JPanel(new BorderLayout());
 			JPanel outcomePanel = new JPanel();
 			outcomePanel.add(txtFldOutcome1);
 			outcomePanel.add(txtFldOutcome2);
 			outcomePanel.add(txtFldOutcome3);
+			outcomePanel.add(Box.createHorizontalStrut(20));
+			outcomePanel.add(new JLabel("Jackpot"));
+			outcomePanel.add(Box.createHorizontalStrut(4));
+			outcomePanel.add(txtFldJackpot);
+			
 			messagesPanel.add(outcomePanel, BorderLayout.NORTH);
-			messagesPanel.add(txtAreaMessages);
+			messagesPanel.add(new JScrollPane(txtAreaMessages));
 			
 			panel.add(coinsPanel, BorderLayout.NORTH);
 			panel.add(messagesPanel);
