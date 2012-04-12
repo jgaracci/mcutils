@@ -28,6 +28,7 @@ public class Blackjack extends Command {
             firstHand.add(drawCard());
             playerHand.add(firstHand);
         }
+        
         houseHand = ApplicationContext.getValue( "blackjack.hand.house." + getUser() );
         if (null == houseHand) {
             houseHand = new ArrayList<Card>();
@@ -37,29 +38,125 @@ public class Blackjack extends Command {
         
         List<Card> currentHand = playerHand.get(0);
         
-        showPlayerHand(currentHand);
-        showHouseHand(false);
-        
-        if ("HIT".equals( getArgs().toUpperCase())) {
-            currentHand.add( drawCard() );
+        String args = getArgs();
+        if (null == args) {
+            args = "";
         }
         
-        int currentHandValue = sumHand(currentHand);
+        int houseHandSum = sumHand(houseHand);
         
-        if (currentHandValue == 21) {
-            // Win
+        if ("HIT".equals( args.toUpperCase()) || "STAND".equals(  args.toUpperCase() )) {
+            if ("HIT".equals( args.toUpperCase())) {
+                currentHand.add( drawCard() );
+            }
+            
+            int currentHandValue = sumHand(currentHand);
+            
+            if (currentHandValue > 21) {
+                // Bust
+                displayMessage( "** BUST **" );
+                
+                // Current hand is done
+                playerHand.remove( currentHand );
+                
+                // Clean up if there are no more player hands
+                if (playerHand.size() == 0) {
+                    clearHand();
+                }
+            }
+            else {
+                // Update the house hand
+                if ("STAND".equals( args.toUpperCase())) {
+                    while (houseHandSum < 16) {
+                        houseHand.add( drawCard() );
+                        houseHandSum = sumHand(houseHand);
+                    }
+                }
+                else {
+                    if (houseHandSum < 16) {
+                        houseHand.add( drawCard() );
+                        houseHandSum = sumHand(houseHand);
+                    }
+                }
+                
+                if (houseHandSum > 21) {
+                    displayMessage( "House busts, you win");
+                    
+                    // Current hand is done
+                    playerHand.remove( currentHand );
+                    
+                    // Clean up if there are no more player hands
+                    if (playerHand.size() == 0) {
+                        clearHand();
+                    }
+                }
+
+                if ("STAND".equals( args.toUpperCase())) {
+                    // Compare with House
+                    if (currentHandValue > houseHandSum) {
+                        showPlayerHand(currentHand);
+                        showHouseHand(true);
+                        
+                        displayMessage( "You win!" );
+                        
+                        // Current hand is done
+                        playerHand.remove( currentHand );
+                        
+                        // Clean up if there are no more player hands
+                        if (playerHand.size() == 0) {
+                            clearHand();
+                        }
+                    }
+                    else if (currentHandValue == houseHandSum) {
+                        showPlayerHand(currentHand);
+                        showHouseHand(true);
+                        
+                        displayMessage( "You pushed" );
+                        
+                        // Current hand is done
+                        playerHand.remove( currentHand );
+                        
+                        // Clean up if there are no more player hands
+                        if (playerHand.size() == 0) {
+                            clearHand();
+                        }
+                    }
+                }
+                else {
+                    showPlayerHand(currentHand);
+                    showHouseHand(false);
+                    saveHands();
+                }
+            }
         }
-        else if (currentHandValue > 21) {
-            // Bust
-            CommandUtils.writeToConsole( "** BUST **", getUser());
-            
-            // Currenty hand is done
-            playerHand.remove( currentHand );
-            
-            // Clean up if there are no more player hands
-            if (playerHand.size() == 0) {
-                ApplicationContext.clearValue( "blackjack.hand." + getUser() );
-                ApplicationContext.clearValue( "blackjack.hand.house." + getUser() );
+        else {
+            if (currentHand.size() == 21) {
+                showPlayerHand(currentHand);
+                showHouseHand(true);
+                
+                // Blackjack
+                displayMessage( "** BLACKJACK **" );
+                
+                // Compare with House
+                if (houseHandSum < 21) {
+                    displayMessage( "You win!" );
+                }
+                else {
+                    displayMessage( "You pushed" );
+                }
+                
+                // Current hand is done
+                playerHand.remove( currentHand );
+                
+                // Clean up if there are no more player hands
+                if (playerHand.size() == 0) {
+                    clearHand();
+                }
+            }
+            else {
+                showPlayerHand(currentHand);
+                showHouseHand(false);
+                saveHands();
             }
         }
         
@@ -68,6 +165,16 @@ public class Blackjack extends Command {
         }
         
         ApplicationContext.setValue( "blackjack.deck." + getUser(), deck );
+    }
+
+    private void saveHands() {
+        ApplicationContext.setValue( "blackjack.hand." + getUser(), playerHand );
+        ApplicationContext.setValue( "blackjack.hand.house." + getUser(), houseHand );
+    }
+
+    public void clearHand() {
+        ApplicationContext.clearValue( "blackjack.hand." + getUser() );
+        ApplicationContext.clearValue( "blackjack.hand.house." + getUser() );
     }
     
     private int sumHand(List<Card> hand) {
@@ -94,12 +201,13 @@ public class Blackjack extends Command {
             // Look for 21
             for(Card card : hand) {
                 // If this is the last card and an Ace
-                if (hand.indexOf( card ) == hand.size() - 1) {
-                    if (value + 11 == 21) {
+                if (hand.indexOf( card ) == hand.size() - 1 && card.getType() == CardType.Ace ) {
+                    if (null != value && value + 11 == 21) {
+                        value = 21;
+                        break;
                     }
                 }
-                value += card.getType().getValue();
-                
+                value = (null == value ? 0 : value) + (card.getType().getValue() > 9 ? 10 : card.getType().getValue());
             }
         }
         return value;
@@ -118,6 +226,10 @@ public class Blackjack extends Command {
                 hand += ", ";
             }
         }
+        displayMessage( hand );
+    }
+
+    public void displayMessage( String hand ) {
         CommandUtils.writeToConsole( hand, getUser() );
     }
 
@@ -129,7 +241,7 @@ public class Blackjack extends Command {
                 hand += ", ";
             }
         }
-        CommandUtils.writeToConsole( hand, getUser() );
+        displayMessage( hand );
     }
 
     private Card drawCard() {
@@ -149,6 +261,35 @@ public class Blackjack extends Command {
 
     @Override
     public String getDescription() {
-        return null;
+        return "Play a game of Blackjack";
+    }
+    
+    public static void main( String[] args ) {
+        try {
+            ApplicationContext.setFilePath( "blackjack.context" );
+            ApplicationContext.load();
+            
+            Blackjack bj = new Blackjack() {
+                @Override
+                public void displayMessage( String hand ) {
+                    System.out.println(hand);
+                }
+            };
+            bj.execute();
+            ApplicationContext.save();
+            
+            bj = new Blackjack() {
+                @Override
+                public void displayMessage( String hand ) {
+                    System.out.println(hand);
+                }
+            };
+            bj.setArgs( "HIT" );
+            bj.execute();
+            ApplicationContext.save();
+        }
+        catch ( Throwable t ) {
+            t.printStackTrace( System.err );
+        }
     }
 }
