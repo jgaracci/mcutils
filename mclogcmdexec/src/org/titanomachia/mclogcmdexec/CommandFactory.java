@@ -36,7 +36,7 @@ public class CommandFactory {
             command = createCommand(commandName, user);
             if (null != command) {
                 command.setUser(user);
-                command.setArgs(args);
+                command.setArgs(args.trim());
             }
         }
         
