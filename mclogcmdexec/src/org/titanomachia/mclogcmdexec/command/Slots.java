@@ -26,6 +26,7 @@ import javax.swing.text.Document;
 import javax.swing.text.PlainDocument;
 
 import org.apache.commons.lang.StringUtils;
+import org.jgdk.ui.util.DocumentHelper;
 import org.titanomachia.mclogcmdexec.ApplicationContext;
 
 public class Slots extends Command {
@@ -528,19 +529,19 @@ public class Slots extends Command {
 		}
 
 		public void setCoins(Integer coins) {
-			setText(coinsModel, String.valueOf(coins));
+			DocumentHelper.setText(coinsModel, String.valueOf(coins));
 		}
 		
 		public void setOutcome1(String outcome) {
-			setText(outcome1Model, outcome);
+			DocumentHelper.setText(outcome1Model, outcome);
 		}
 		
 		public void setOutcome2(String outcome) {
-			setText(outcome2Model, outcome);
+			DocumentHelper.setText(outcome2Model, outcome);
 		}
 		
 		public void setOutcome3(String outcome) {
-			setText(outcome3Model, outcome);
+			DocumentHelper.setText(outcome3Model, outcome);
 		}
 		
 		public void setMessages(final String[] messages) {
@@ -564,7 +565,7 @@ public class Slots extends Command {
 			Integer integer = null;
 			
 			try {
-				integer = Integer.valueOf(getText(document));
+				integer = Integer.valueOf(DocumentHelper.getText(document));
 			}
 			catch(NumberFormatException e) {
 			}
@@ -573,37 +574,15 @@ public class Slots extends Command {
 		}
 		
 		public String getWager() {
-			return getText(wagerModel);
+			return DocumentHelper.getText(wagerModel);
 		}
 		
 		public void setWager(Integer wager) {
-			setText(wagerModel, String.valueOf(wager));
+			DocumentHelper.setText(wagerModel, String.valueOf(wager));
 		}
 		
 		public void setJackpot(Integer jackpot) {
-			setText(jackpotModel, String.valueOf(jackpot));
-		}
-		
-		private void setText(final Document document, final String text) {
-			SwingUtilities.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					try {
-						document.remove(0, document.getLength());
-						document.insertString(0, text, null);
-					} catch (BadLocationException e) {
-					}
-				}
-			});
-		}
-		
-		private String getText(Document document) {
-			String text = null;
-			try {
-				text = document.getText(0, document.getLength());
-			} catch (BadLocationException e) {
-			}
-			return text;
+			DocumentHelper.setText(jackpotModel, String.valueOf(jackpot));
 		}
 	}
 	
